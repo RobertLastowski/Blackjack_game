@@ -10,8 +10,6 @@ values = {'Two':2, 'Three':3, 'Four':4, 'Five':5, 'Six':6, 'Seven':7, 'Eight':8,
 suits = ('Hearts', 'Diamonds', 'Spades', 'Clubs')
 ranks = ('Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Jack', 'Queen', 'King', 'Ace')
 
-playing = True
-
 class Card:
     
     def __init__(self,suit,rank):
@@ -30,7 +28,7 @@ class Deck:
         
         for suit in suits:
             for rank in ranks:
-                # Create the Card object with for in for like taking every sut and creating every card(of every rank) with this suit
+                # Create the Card object with for in for like taking every suit and creating every card(of every rank) with this suit
                 self.deck.append(Card(suit,rank))
     
     def __str__(self):
@@ -49,16 +47,16 @@ class Deck:
     
 class Hand:
     def __init__(self):
-        self.cards = []  # start with an empty list as we did in the Deck class
-        self.value = 0   # start with zero value
-        self.aces = 0    # add an attribute to keep track of aces
+        self.cards = []  # empty list for adding cards to hand
+        self.value = 0  
+        self.aces = 0    # an attribute to keep track of aces (beacuse they can have 1 or 11 value)
     
     def add_card(self,card):
         self.cards.append(card)
         self.value += card.value
         
         if card.rank == 'Ace':
-            self.aces += 1  # add to self.aces
+            self.aces += 1
     
     def adjust_for_ace(self):
         while self.value > 21 and self.aces > 0:
@@ -68,7 +66,7 @@ class Hand:
 class Chips:
     
     def __init__(self):
-        self.total = 100  # This can be set to a default value or supplied by a user input
+        self.total = 100  # This is just setp up static value for every game
         self.bet = 0
         
     def win_bet(self):
@@ -98,7 +96,7 @@ def hit(deck,hand):
     
     
 def hit_or_stand(deck,hand):
-    global playing  # to control an upcoming while loop
+    global playing  # to control an upcoming while loop in the game logic
     
     while True:
         if_hit = input("Do you want to hit or stand[h/s]?")
@@ -117,7 +115,7 @@ def hit_or_stand(deck,hand):
     
 def show_some(player,dealer):
     print("\nDealer's Hand:")
-    print(" <card hidden>")
+    print(" <hidden card>")
     print('',dealer.cards[1])  
     print("\nPlayer's Hand:", *player.cards, sep='\n ')
     
@@ -150,12 +148,13 @@ def push(player,dealer):
     print("Dealer and Player tie! It's a push.")
     
 chips = Chips()
+playing = True
+
 
 while True:
-    # Print an opening statement
     print("Welcome to the blackjack!! Let's begin the game!")
     
-    # Create & shuffle the deck, deal two cards to each player
+    # Creates & shuffles the deck, dealing two cards to player and dealer
     play_deck = Deck()
     play_deck.shuffle()
     
@@ -166,38 +165,33 @@ while True:
     dealer = Hand()
     dealer.add_card(play_deck.deal())
     dealer.add_card(play_deck.deal())
-    
-    # Set up the Player's chips
 
-    
-    # Prompt the Player for their bet
     take_bet(chips)
     
-    # Show cards (but keep one dealer card hidden)
+    # Show cards (but keeps one dealer card hidden)
     show_some(player,dealer)
     
-    while playing:  # recall this variable from our hit_or_stand function
+    while playing:  # inner while loop for the moves of the player
         
         # Prompt for Player to Hit or Stand
         hit_or_stand(play_deck,player)
         
-        # Show cards (but keep one dealer card hidden)
+        # Show cards (but keeps one dealer card hidden)
         show_some(player,dealer)
 
-        # If player's hand exceeds 21, run player_busts() and break out of loop
+        # If player's hand exceeds 21, run player_busts() and break out of inner loop
         if player.value > 21:
             player_busts(player,dealer,chips)
             break
             
     if player.value <= 21:
-        # If Player hasn't busted, play Dealer's hand until Dealer reaches 17
+        # If Player hasn't busted, hitting to Dealer's hand until Dealer reaches 17 points
         while dealer.value < 17:
             print("Dealer is hiting..")
             dealer.add_card(play_deck.deal())
+            show_all(player,dealer)    # Show all cards in Dealers hand
 
-            # Show all cards
-        show_all(player,dealer)    
-            # Run different winning scenarios
+        # Run different winning scenarios
         if player.value > dealer.value and player.value < 22:
             player_wins(player,dealer,chips)
 
@@ -213,9 +207,10 @@ while True:
     # Ask to play again
     new_game = input("Would you like to play again? Please insert 'y' or 'n' ")
     
-    if new_game.lower() == 'n':
-        print("Thank you for playing! :)")
-        break
-    else:
+    if new_game.lower() == 'y':
         playing = True
         continue
+    else:
+        print("Thank you for playing! :)")
+        break
+        

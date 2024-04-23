@@ -202,7 +202,7 @@ while True:
             dealer_wins(player,dealer,chips)
 
         else:
-            push(player,dealer,hand)
+            push(player,dealer)
         
     # Ask to play again
     new_game = input("Would you like to play again? Please insert 'y' or 'n' ")
